@@ -17,7 +17,7 @@ class Frame:
 
         self.XP, self.YP = x, y
 
-        self.canvas = standart.resize((x * width, y * height))
+        self.canvas = standart
 
     def fetchPiece(self, fileName):  # don't add the extension
 
@@ -38,7 +38,9 @@ class Frame:
 
     @staticmethod
     def initStandart(x, y, folder) -> Image:
-        piece = Image.open("blank.png")
+        piece = Image.open("x.png")
+
+
 
         return Frame(piece, x, y, piece.size[0], piece.size[1],  folder, ".png")
 
@@ -70,15 +72,17 @@ class Frame:
         self.canvas.show()
 
 
-def newPuzzle(image, target, extension, XP, YP, XL, YL):
+def newPuzzle(image, target, extension, XP, YP):
 
     base = Image.open(image)
 
-    base.resize((XP*XL, YP*YL))
-
     blank = Image.open("blank.png")
 
-    blank = ImageOps.contain(blank, (XL, YL))
+    blank = ImageOps.fit(blank, (base.width // XP, base.height // YP))
+
+    print((base.width // XP, base.height // YP))
+
+    print(blank.size)
 
     blank.save("blank.png")
 
@@ -102,17 +106,19 @@ def newPuzzle(image, target, extension, XP, YP, XL, YL):
             piece.save(f"{target}/{(XP * YP) - (xth + (yth * XP)) }{extension}")
 
 
-X = 32
-Y = 20
+X = 9
+Y = 1
 
-newPuzzle("turkish_flag.png", "32x20", ".png", X, Y, 34, 34)
+newPuzzle("turkish_flag.png", "flag_pieces_9x1", ".png", X, Y)
 
-f = Frame.initStandart(X, Y, "32x20")
+
+
+f = Frame.initStandart(X, Y, "flag_pieces_9x1")
 
 
 for i in range(X * Y):
 
     f = f.nextRandomFrame()
 
-    f.canvas.save("frames/" + str(i + 1) + ".png")
+    f.canvas.save("frames_9x1/" + str(i + 1) + ".png")
 
