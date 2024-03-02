@@ -4,6 +4,8 @@ from copy import deepcopy as DEEP
 
 from random import randrange
 
+import __main__
+
 
 class Frame:
 
@@ -23,7 +25,7 @@ class Frame:
 
         Image.open(self.pieceFolder + "/" + fileName)
 
-    def putAPiece(self, pieceFile: str, x, y):
+    def putARegularPiece(self, pieceFile: str, x, y):
 
         coor = (x, y)
 
@@ -44,12 +46,7 @@ class Frame:
 
         return Frame(piece, x, y, piece.size[0], piece.size[1],  folder, ".png")
 
-    def nextRandomFrame(self) -> Image:
-
-        current = DEEP(self)
-
-        if len(self.pieces) >= (self.XP * self.YP):
-            return current
+    def nextRandomFrame(self):
 
         coor = (1, 1)
 
@@ -58,12 +55,17 @@ class Frame:
             coor = (randrange(0, self.XP), randrange(0, self.YP))
 
             if coor not in self.pieces:
-
                 break
+        return coor
 
-        pieceName = str( (self.XP - (coor[0])) + ( (self.YP - coor[1] - 1) * self.XP)) + self.extension
+    def completePiece(self, coor) -> Image:
+        current = DEEP(self)
+        if len(self.pieces) >= (self.XP * self.YP):
+            return current
 
-        current.putAPiece(pieceName, coor[0], coor[1])
+        pieceName = str(abs((self.XP - (coor[0])) + ((self.YP - coor[1] - 1) * self.XP))) + self.extension
+
+        current.putARegularPiece(pieceName, coor[0], coor[1])
 
         return current
 
@@ -106,19 +108,25 @@ def newPuzzle(image, target, extension, XP, YP):
             piece.save(f"{target}/{(XP * YP) - (xth + (yth * XP)) }{extension}")
 
 
-X = 9
-Y = 1
+def ordered():
+    X = 9
+    Y = 1
 
-newPuzzle("turkish_flag.png", "flag_pieces_9x1", ".png", X, Y)
+    # newPuzzle("turkish_flag.png", "flag_pieces_9x1", ".png", X, Y)
 
+    f = Frame.initStandart(X, Y, "flag_pieces_9x1")
 
+    optimalPlacing = [(8, 0), (0, 0), (7, 0), (1, 0), (6, 0), (2, 0), (5, 0), (3, 0), (4, 0)]
 
-f = Frame.initStandart(X, Y, "flag_pieces_9x1")
+    counter = 0
 
+    for i in optimalPlacing:
+        c = i
 
-for i in range(X * Y):
+        print(c)
 
-    f = f.nextRandomFrame()
+        f = f.completePiece(c)
 
-    f.canvas.save("frames_9x1/" + str(i + 1) + ".png")
+        f.canvas.save("frames_9x1/" + str(counter + 1) + ".png")
 
+        counter += 1
