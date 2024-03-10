@@ -4,9 +4,6 @@ from copy import deepcopy as DEEP
 
 from random import randrange
 
-import __main__
-
-
 class Frame:
 
     def __init__(self, standart, x, y, width, height, pieceFolder, extension):
@@ -24,6 +21,17 @@ class Frame:
     def fetchPiece(self, fileName):  # don't add the extension
 
         Image.open(self.pieceFolder + "/" + fileName)
+
+    def putAIRegularPiece(self, data, id):
+
+        ((x, y), pieceFile) = data
+
+        piece = Image.open(self.pieceFolder + "/" + pieceFile)
+
+        self.pieces.append((0, id))
+
+        self.canvas.paste(piece, (x, y))
+
 
     def putARegularPiece(self, pieceFile: str, x, y):
 
@@ -48,7 +56,7 @@ class Frame:
 
     def nextRandomFrame(self):
 
-        coor = (1, 1)
+        print(self.XP, self.YP)
 
         while True:
 
@@ -130,3 +138,31 @@ def ordered():
         f.canvas.save("frames_9x1/" + str(counter + 1) + ".png")
 
         counter += 1
+
+
+def irregular():
+
+    planning = [((0, 0), "up.png"), ((0, 109), "left.png"), ((0, 394), "left_2.png"), ((650, 109), "right_4.png"), ((795, 109), "right_3.png"), ((795, 309), "right_3.png"), ((940, 109), "right_4.png"), ((108, 509), "down.png")]
+
+    f = Frame.initStandart(1, 8, "irregular_pieces")
+
+    counter = 0
+
+
+    for _ in planning:
+
+        id = f.nextRandomFrame()
+
+        f.putAIRegularPiece(planning[id[1]], id[1])
+
+        f.canvas.save("irregular_frames/" + str(counter + 1) + ".png")
+
+        print(f.pieces)
+
+        counter += 1
+
+
+    #base = ((108, 109), "base.png")
+
+
+irregular()
